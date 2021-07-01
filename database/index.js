@@ -6,7 +6,7 @@ let books =[{
   pubDate:"2021-07-02",
   numOfPage:225,
   category:["fiction","programming","tech","web dev"],
-  publications: [1,2]
+  publications: 1
 },
 {
     ISBN : "12345TWO",
@@ -21,7 +21,7 @@ let books =[{
 ]
 
 
-const authors =[{
+let authors =[{
     id: 1,
     name:"pavan",
     books:["12345ONE"]
