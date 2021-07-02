@@ -315,10 +315,13 @@ Access      : PUBLIC
 Parameters  : isbn
 Method      : DELETE
  */ 
-shapeAI.delete("/book/delete/:isbn",(req,res)=>{
-        const updateBookDatabase = database.books.filter((book)=>book.ISBN!==req.params.isbn);
-        database.books = updateBookDatabase;
-        return res.json({books:database.books,message:"deleted successfully!"});
+shapeAI.delete("/book/delete/:isbn",async(req,res)=>{
+    // since deleting the whole object just pass the parameter
+        const updateBookDatabase = await BookModel.findOneAndDelete(    
+            {ISBN:req.params.isbn})
+          
+        
+        return res.json({books:updateBookDatabase,message:"deleted successfully!"});
 });  
 
 /*
@@ -328,22 +331,20 @@ Access      : PUBLIC
 Parameters  : isbn/authorID
 Method      : DELETE
  */ 
-shapeAI.delete("/book/author/delete/:isbn/:authorID",(req,res)=>{
-    database.books.forEach((book)=>{
-    if(book.ISBN===req.params.isbn){
-        const updateBookAuthor = book.authors.filter((author)=>(author!==parseInt(req.params.authorID)));
-        book.authors =updateBookAuthor;
-        return;
-    }  
-    });
-    database.authors.forEach((author)=>{
-        if(author.id===parseInt(req.params.authorID)){
-            const updateAuthorDatabase = author.books.filter((book)=>(book!==req.params.isbn));
-            author.books=updateAuthorDatabase;
-            return;
-        }
-    })
-    return res.json({books:database.books,authors:database.authors,message:"Deleted and updated succesfully!"});
+shapeAI.delete("/book/author/delete/:isbn/:authorID",async(req,res)=>{
+
+    const updatedBook = await BookModel.findOneAndUpdate({ISBN:req.params.isbn},
+        {$pull:{authors:req.params.authorID}},
+        {new:true}
+        );
+
+    const updatedAuthor = await AuthorModel.findOneAndUpdate({id:parseInt(req.params.authorID)},
+        {$pull:{books:req.params.isbn}},
+        {new:true}
+        );
+        
+        
+    return res.json({books:updatedBook,authors:updatedAuthor ,message:"Deleted and updated succesfully!"});
 })
 
 /*
@@ -353,10 +354,13 @@ Access      : PUBLIC
 Parameters  : id
 Method      : DELETE
  */ 
-shapeAI.delete("/publication/delete/:id",(req,res)=>{
-    const updatePublication = database.publications.filter((publication)=>publication.id!==parseInt(req.params.id));
-    database.publications = updatePublication;
-    return res.json({publications:database.publications});
+shapeAI.delete("/publication/delete/:id",async(req,res)=>{
+    const updatePublication = await PublicationModel.findOneAndDelete(
+        {id:parseInt(req.params.id)}
+       
+    )
+   
+    return res.json({publications:updatePublication,message:"deleted this data!"});
 })
 
 /*
@@ -367,36 +371,21 @@ Parameters  : isbn/id
 Method      : DELETE
  */ 
 
-shapeAI.delete("/publication/book/delete/:isbn/:id",(req,res)=>{
-   database.books.forEach((book)=>{
-     if(book.ISBN===req.params.isbn){
-    //    const updatePub = book.publications.filter ((publication)=>publication!==parseInt(req.params.id));  
-    // book.publications = updatePub;
-            //book.publication -for that particular book
-               // this doesnt work beacause filter is used for array
-        book.publications=0;
-               
-       return;
-    }
-  })
+shapeAI.delete("/publication/book/delete/:isbn/:id",async(req,res)=>{
+    const newBook =await BookModel.findOneAndUpdate({ISBN:req.params.isbn},
+        {publications:null},
+        {new:true}
+        )
+    
+    const newPublication = await PublicationModel.findOneAndUpdate(
+        {id:parseInt(req.params.id)},
+        {$pull:{books:req.params.isbn}},
+        {new:true}
+    )
    
-   database.publications.forEach((publication)=>{
-        if(publication.id===parseInt(req.params.id)){
-            const updateBookPublication = publication.books.filter((book)=>book!==req.params.isbn);
-            publication.books = updateBookPublication;
-            return;
-        }
-
-   })
-   return res.json({books:database.books,publications:database.publications,message:"Uffff!!!!!!!!!"})
+   return res.json({books:newBook,publications:newPublication,message:"Uffff!!!!!!!!!"})
 
 })
-
-
-
-
-
-
 
 
 shapeAI.listen(8000,()=> console.log("Server is running sucessfully!..."));
