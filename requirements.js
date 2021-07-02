@@ -1,7 +1,7 @@
   // We are a company we need an API for BOOKS,AUTHORS,PUBLICATIONS...
 
-  // 🔥 --->taskcompletion using only nodejs and express
-  // 📌 --->taskcompletion (convert to the model and execution that is nodejs,express,mongodb)
+  // 🔥 ---> taskcompletion using only nodejs and express
+  // 📌 ---> taskcompletion (convert to the model and execution that is nodejs,express,mongodb)
 
   // BOOKS
   // GET
@@ -28,10 +28,10 @@
   // * to search and retrive a author based on a book[🔥 📌 ]
 
   // POST
-  // * add a new author details[🔥 📌  ]
+  // * add a new author details[🔥 📌 ]
 
   //PUT
-  // * adding a new author[🔥 ] (update book database  and update the author database)
+  // * adding a new author[🔥 📌 ] (update book database  and update the author database)
   
   // DELETE
   // * delete an author from the book database as well as update the author database[🔥 ]
@@ -40,15 +40,15 @@
   // ---------------------------------------------------------------------------------
   // GET
   // PUBLICATIONS
-  // * all PUBLICATIONS[🔥 ]
-  // * specific publication[🔥 ]
-  // * to get a list of pubications based on a book[🔥 ]
+  // * all PUBLICATIONS[🔥 📌 ]
+  // * specific publication[🔥 📌 ]
+  // * to get a list of pubications based on a book[🔥 📌 ]
 
   // POST
-  // * add a new publication details[🔥 ]
+  // * add a new publication details[🔥 📌 ]
 
   // PUT
-  // * adding a new isbn in publication[🔥 ](update books database as well as publication database )
+  // * adding a new isbn in publication[🔥 📌 ](update books database as well as publication database )
 
   // DELETE
   // * delete the whole publication from publication database[🔥 ]

@@ -260,22 +260,26 @@ Access      : PUBLIC
 Parameters  : isbn
 Method      : PUT
 */ 
-shapeAI.put("/book/author/update/:isbn",(req,res)=>{
-    database.books.forEach((book)=>{
-        if(book.ISBN===req.params.isbn){
-            book.authors.push(req.body.newAuthor); // for each book 
-            return;
-        };
-    })
-    database.authors.forEach((author)=>{
-        if(author.id===req.body.newAuthor){
-        author.books.push(req.params.isbn);
-        return;
-        }
-    })
-    return res.json({books:database.books,authors:database.authors,message:"both done succesfully!!"});
+shapeAI.put("/book/author/update/:isbn",async(req,res)=>{
+     const updatedBook = await BookModel.findOneAndUpdate(
+         {ISBN:req.params.isbn},
+          {$addToSet:{authors: req.body.newAuthor}},
+          {new:true}
+         )
+       
+          
+         const updatedAuthor= await AuthorModel.findOneAndUpdate(
+             {id:req.body.newAuthor},
+              {$addToSet:{books:req.params.isbn}},
+              {new:true}
+            )
+            
+       
+       
+    return res.json({books:updatedBook,authors:updatedAuthor,message:"both done succesfully!!"});
 
 })
+
 
 /*
 Routing     : /publication/update/book
@@ -285,19 +289,21 @@ Parameters  : isbn
 Method      : PUT
 */ 
 
-shapeAI.put("/publication/update/book/:isbn",(req,res)=>{
+shapeAI.put("/publication/update/book/:isbn",async(req,res)=>{
     //update the publication database
-    database.publications.forEach((publication)=>{
-      if(publication.id===req.body.pubID){
-          return publication.books.push(req.params.isbn);
-      }
-    })
-    database.books.forEach((book)=>{
-        if(book.ISBN===req.params.isbn){
-            return book.publications = req.body.pubID;
-        }
-    })
-    return res.json({books:database.books,publications:database.publications,message:"added dude!!"});
+    const updatedPublication = await PublicationModel.findOneAndUpdate(
+        {id:req.body.pubID},
+        {$push:{books:req.params.isbn}},
+        {new:true}
+    )
+    //update book database
+    const updatedBook = await BookModel.findOneAndUpdate(
+        {ISBN:req.params.isbn},
+        {publications:req.body.pubID},
+        {new:true}
+
+    )
+    return res.json({books:updatedBook,publications:updatedPublication,message:"added dude!!"});
 })
 
 

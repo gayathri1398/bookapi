@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 // Schema 
-const PublicationSchema ={
+const PublicationSchema = mongoose.Schema({
     id: Number,
     name:String,
     books:[String]
-}
+});
 
 const PublicationModel = mongoose.model("publication",PublicationSchema);
 

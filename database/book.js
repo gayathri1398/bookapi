@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 //create a schema
-const BookSchema = {
+const BookSchema =mongoose.Schema( {
     ISBN : String,
     title:String,
     authors:[Number],
@@ -9,7 +9,7 @@ const BookSchema = {
     numOfPage:Number,
     category:[String],
     publications:Number
-}
+});
 
 // model
 const BookModel = mongoose.model("books",BookSchema);

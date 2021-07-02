@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 // Schema 
-const AuthorSchema ={
+const AuthorSchema =mongoose.Schema({
     id: Number,
     name:String,
     books:[String]
-}
+});
 
 const AuthorModel = mongoose.model("authors",AuthorSchema);
 
