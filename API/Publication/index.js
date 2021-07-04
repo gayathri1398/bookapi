@@ -59,10 +59,16 @@ Parameters  : none
 Method      :POST
 */ 
 Router.post("/new",async(req,res)=>{
+try {
     const {newPublication} = req.body;
     const createNewPublication = await PublicationModel.create(newPublication);
     return res.json({publications: createNewPublication,message:"Hurray! added succesfully!!"});
+
+} catch (error) {
+    return res.json({Error:error.message});
+}
 });
+ 
 
 
 /*

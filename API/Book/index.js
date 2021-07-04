@@ -87,9 +87,16 @@ Parameters  : none
 Method      : POST
  */
 Router.post("/new",async(req,res)=>{
-    const {newBook} = req.body;  //destructure
-    const addNewBook = BookModel.create(newBook);
-    return res.json({books:addNewBook,message:"book added succesfully!"}) ;
+try {
+        const {newBook} = req.body;  //destructure
+        const addNewBook =await BookModel.create(newBook);
+        return res.json({books:addNewBook,message:"book added succesfully!"}) ;
+    
+    
+    } catch (error) {
+     
+        return res.json({error:error.message});
+    }
 });
 
 // put request
@@ -106,9 +113,7 @@ Router.put("/update/:isbn",async(req,res)=>{
         {ISBN:req.params.isbn},
         {title: req.body.bookTitle},
         {new:true}
-        )
-    
-  
+        );
     return res.json({books:updatedBook,message:"Here u go!"});
 });
 
@@ -120,7 +125,7 @@ Access      : PUBLIC
 Parameters  : isbn
 Method      : DELETE
  */ 
-Router.delete("/delete/:isbn",async(req,res)=>{
+Router.delete("/book/delete/:isbn",async(req,res)=>{
     // since deleting the whole object just pass the parameter
         const updateBookDatabase = await BookModel.findOneAndDelete(    
             {ISBN:req.params.isbn})

@@ -2,9 +2,20 @@ const mongoose = require("mongoose");
 
 // Schema 
 const PublicationSchema = mongoose.Schema({
-    id: Number,
-    name:String,
-    books:[String]
+    id:{
+    type: Number,
+    required:true
+    },
+    name:{
+        type:String,
+        required:true
+    },
+    books:{
+        type:[String],
+        required:true,
+        minLength:[8],
+        maxLength:[10]
+    }
 });
 
 const PublicationModel = mongoose.model("publication",PublicationSchema);
