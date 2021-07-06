@@ -12,8 +12,13 @@ Parameters  : none
 Method      : GET
  */
 Router.get("",async(req,res)=>{
-    const getAuthor =await AuthorModel.find();
-    return res.json({authors:getAuthor})
+    try {
+        const getAuthor = await AuthorModel.find();
+        return res.json({authors:getAuthor})
+    } catch (error) {
+        return res.json({error:error.message});
+    }
+  
 });
 
 
@@ -25,11 +30,16 @@ Parameters  : name
 Method      : GET
  */
 Router.get("/authorname/:name",async(req,res)=>{
+    try{
      const getSpecificAuthor = await AuthorModel.findOne({name:req.params.name});
      if(!getSpecificAuthor){
          return res.json({error:`No data found on this ${req.params.name}`});
      }
      return res.json({authors:getSpecificAuthor});
+    
+    }catch(error){
+        return res.json({error:error.message});
+    }
 });
 
 /*
@@ -41,14 +51,20 @@ Method      : GET
  */
  
 Router.get("/authorisbn/:isbn",async(req,res)=>{
-    const getAuthor = await AuthorModel.findOne({books:req.params.isbn});
+    try {
+        const getAuthor = await AuthorModel.findOne({books:req.params.isbn});
   
    
-    if (!getAuthor){
-        
-        return res.json({error:`No data found on this ${req.params.isbn}`});
+        if (!getAuthor){
+            
+            return res.json({error:`No data found on this ${req.params.isbn}`});
+        }
+        return res.json({authors:getAuthor});
+
+    } catch (error) {
+        return res.json({error:error.message});
     }
-    return res.json({authors:getAuthor});
+   
 });
 
 /*
@@ -80,22 +96,28 @@ Parameters  : isbn
 Method      : PUT
 */ 
 Router.put("/book/update/:isbn",async(req,res)=>{
-    const updatedBook = await BookModel.findOneAndUpdate(
-        {ISBN:req.params.isbn},
-         {$addToSet:{authors: req.body.newAuthor}},
-         {new:true}
-        )
-      
-         
-        const updatedAuthor= await AuthorModel.findOneAndUpdate(
-            {id:req.body.newAuthor},
-             {$addToSet:{books:req.params.isbn}},
+    try {
+        const updatedBook = await BookModel.findOneAndUpdate(
+            {ISBN:req.params.isbn},
+             {$addToSet:{authors: req.body.newAuthor}},
              {new:true}
-           )
-           
-      
-      
-   return res.json({books:updatedBook,authors:updatedAuthor,message:"both done succesfully!!"});
+            )
+          
+             
+            const updatedAuthor= await AuthorModel.findOneAndUpdate(
+                {id:req.body.newAuthor},
+                 {$addToSet:{books:req.params.isbn}},
+                 {new:true}
+               )
+               
+          
+          
+       return res.json({books:updatedBook,authors:updatedAuthor,message:"both done succesfully!!"});
+        
+    } catch (error) {
+        return res.json({error:error.message});
+    }
+  
 
 });
 
@@ -107,7 +129,7 @@ Parameters  : isbn/authorID
 Method      : DELETE
  */ 
 Router.delete("/book/delete/:isbn/:authorID",async(req,res)=>{
-
+ try {
     const updatedBook = await BookModel.findOneAndUpdate({ISBN:req.params.isbn},
         {$pull:{authors:req.params.authorID}},
         {new:true}
@@ -120,6 +142,11 @@ Router.delete("/book/delete/:isbn/:authorID",async(req,res)=>{
         
         
     return res.json({books:updatedBook,authors:updatedAuthor ,message:"Deleted and updated succesfully!"});
+
+ } catch (error) {
+     return res.json({error:error.message});
+ }
+   
 });
 
 module.exports = Router;

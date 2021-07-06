@@ -12,9 +12,16 @@ Access      : public
 Parameters  : none
 Method      : GET
  */
+
 Router.get("",async(req,res)=>{
-    const getPublication = await PublicationModel.find();
-    return res.json({publications:getPublication});
+    try {
+        const getPublication = await PublicationModel.find();
+        return res.json({publications:getPublication});
+
+    } catch (error) {
+        return res.json({error:error.message});
+    }
+   
     
 });
 
@@ -26,12 +33,18 @@ Parameters  : name
 Method      : GET
  */
 Router.get("/pubname/:name",async(req,res)=>{
-    const specifiedPublications = await PublicationModel.findOne({name:req.params.name});
+    try {
+        const specifiedPublications = await PublicationModel.findOne({name:req.params.name});
    
     if (!specifiedPublications){
         return res.json({error:`No data found on this ${req.params.name}`});
     }
     return res.json({publications:database.publications});
+
+    } catch (error) {
+        return res.json({error:error.message});
+    }
+    
 
 });
 
@@ -44,11 +57,17 @@ Method      : GET
  */
 
 Router.get("/pubisbn/:isbn",async(req,res)=>{
-    const specifiedPublications = await PublicationModel.findOne( {books:req.params.isbn});
-    if (!specifiedPublications){
-        return res.json({error:`No data found on this ${req.params.isbn}`});
+    try {
+        const specifiedPublications = await PublicationModel.findOne( {books:req.params.isbn});
+        if (!specifiedPublications){
+            return res.json({error:`No data found on this ${req.params.isbn}`});
+        }
+        return res.json({publications:specifiedPublications});
+
+    } catch (error) {
+        return res.json({error:error.message});
     }
-    return res.json({publications:specifiedPublications});
+ 
 });
 
 /*
@@ -80,7 +99,8 @@ Method      : PUT
 */ 
 
 Router.put("/update/book/:isbn",async(req,res)=>{
-    //update the publication database
+    try {
+        //update the publication database
     const updatedPublication = await PublicationModel.findOneAndUpdate(
         {id:req.body.pubID},
         {$push:{books:req.params.isbn}},
@@ -94,6 +114,11 @@ Router.put("/update/book/:isbn",async(req,res)=>{
 
     )
     return res.json({books:updatedBook,publications:updatedPublication,message:"added dude!!"});
+
+    } catch (error) {
+        return res.json({error:error.messge});
+    }
+    
 });
 
 
@@ -106,12 +131,18 @@ Parameters  : id
 Method      : DELETE
  */ 
 Router.delete("/delete/:id",async(req,res)=>{
-    const updatePublication = await PublicationModel.findOneAndDelete(
-        {id:parseInt(req.params.id)}
+    try {
+        const updatePublication = await PublicationModel.findOneAndDelete(
+            {id:parseInt(req.params.id)}
+           
+        )
        
-    )
+        return res.json({publications:updatePublication,message:"deleted this data!"});
+
+    } catch (error) {
+      return res.json({error:error.message});  
+    }
    
-    return res.json({publications:updatePublication,message:"deleted this data!"});
 });
 
 /*
@@ -123,19 +154,24 @@ Method      : DELETE
  */ 
 
 Router.delete("/book/delete/:isbn/:id",async(req,res)=>{
-    const newBook =await BookModel.findOneAndUpdate({ISBN:req.params.isbn},
-        {publications:null},
-        {new:true}
+    try {
+        const newBook =await BookModel.findOneAndUpdate({ISBN:req.params.isbn},
+            {publications:null},
+            {new:true}
+            )
+        
+        const newPublication = await PublicationModel.findOneAndUpdate(
+            {id:parseInt(req.params.id)},
+            {$pull:{books:req.params.isbn}},
+            {new:true}
         )
+       
+       return res.json({books:newBook,publications:newPublication,message:"Uffff!!!!!!!!!"});
     
-    const newPublication = await PublicationModel.findOneAndUpdate(
-        {id:parseInt(req.params.id)},
-        {$pull:{books:req.params.isbn}},
-        {new:true}
-    )
-   
-   return res.json({books:newBook,publications:newPublication,message:"Uffff!!!!!!!!!"})
-
+    } catch (error) {
+        return res.json({error:error.message});
+    }
+    
 });
 
 module.exports = Router;
